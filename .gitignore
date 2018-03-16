@@ -1,0 +1,7 @@
+public_html/node_modules
+public_html/novo/node_modules
+public_html/fotos
+!public_html/fotos/fotos_album
+public_html/arquivos
+public_html/adm
+public_html/adm/config

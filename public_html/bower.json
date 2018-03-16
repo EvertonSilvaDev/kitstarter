@@ -1,0 +1,37 @@
+{
+  "name": "kitstarter",
+  "description": "novo kitstarter front",
+  "main": "index.php",
+  "authors": [
+    "Everton Silva"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "kitstarter",
+    "sass",
+    "coffeescript",
+    "js"
+  ],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "slick-carousel": "^1.8.1"
+  },
+  "overrides": {
+    "normalizeMulti" :[
+      {
+        "dependencies":["slick-carousel"],
+        "normalize":{
+          "js": "*.js",
+          "css":"*.css"
+        }
+      }
+    ]
+  }
+}
