@@ -1,7 +1,7 @@
 {
   "name": "kitstarter",
   "description": "novo kitstarter front",
-  "main": "index.php",
+  "main": "index.html",
   "authors": [
     "Everton Silva"
   ],
@@ -23,15 +23,7 @@
   "dependencies": {
     "slick-carousel": "^1.8.1"
   },
-  "overrides": {
-    "normalizeMulti" :[
-      {
-        "dependencies":["slick-carousel"],
-        "normalize":{
-          "js": "*.js",
-          "css":"*.css"
-        }
-      }
-    ]
+  "devDependencies": {
+    "bootstrap": "^4.0.0"
   }
 }

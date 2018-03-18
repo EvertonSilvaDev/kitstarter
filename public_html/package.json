@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/EvertonSilvaDev/kitstarter#readme",
   "devDependencies": {
+    "browser-sync": "^2.23.6",
     "gulp": "^3.9.1",
     "gulp-bower-normalize": "^1.1.1",
     "gulp-browserify": "^0.5.1",

@@ -4,16 +4,20 @@ var gulp = require('gulp'),
 sass = require('gulp-sass'),
 rename = require('gulp-rename'),
 concat     = require('gulp-concat-util'),
-livereload = require('gulp-livereload'),
+// livereload = require('gulp-livereload'), DEPRECIADO
+browserSync = require('browser-sync').create(),
 watch = require('gulp-watch'),
 filter = require('gulp-filter'),
 mainBowerFiles = require('main-bower-files'),
-bowerNormalizer = require('gulp-bower-normalize'),
+// bowerNormalizer = require('gulp-bower-normalize'), Não funcionou D:
 jsValidate = require('gulp-jsvalidate'),
 browserify = require('gulp-browserify'),
 coffee = require('gulp-coffee'),
 imagemin = require('gulp-imagemin'),
-include = require('gulp-include');
+include = require('gulp-include'),
+sourcemaps = require('gulp-sourcemaps');
+
+var reload  = browserSync.reload;
 
 //json listando o caminho do codigo fonte e o destino de cada linguagem
 var src = {
@@ -35,7 +39,7 @@ gulp.task('compila_sass', function(){
   .pipe(sass({outputStyle: 'compressed'}).on('error',sass.logError))
   .pipe(rename('style.min.css'))
   .pipe(gulp.dest(dist.css))
-  .pipe(livereload());
+  .pipe(reload({stream: true}))
 });
 
 //image min
@@ -45,7 +49,7 @@ gulp.task('image_min',function(){
     imagemin.gifsicle({interlaced: true}),
     imagemin.jpegtran({progressive: true}),
     imagemin.optipng({optimizationLevel: 5}),
-    imagemon.svgo({
+    imagemin.svgo({
       plugins: [
         {removeViewBox: true},
         {cleanupIDs: false}
@@ -53,6 +57,7 @@ gulp.task('image_min',function(){
     })
   ]))
   .pipe(gulp.dest(dist.img))
+
 });
 
 // Concatenador de arquivos Bower
@@ -60,37 +65,29 @@ gulp.task('bower',function(){
     var filterJS = filter('**/*.js')
     var filterCSS = filter('**/*.css')
     return gulp.src(mainBowerFiles(), {base: './bower_components'})
-    .pipe(bowerNormalizer({ bowerJson: './bower.json' }))
     .pipe(filterJS)
     .pipe(concat('vendor.js'))
     .pipe(gulp.dest(dist.js))
-    .pipe(filterJS.restore)
     .pipe(filterCSS)
     .pipe(concat('vendor.css'))
     .pipe(gulp.dest(dist.css))
-    .pipe(filterCSS.restore)
     .pipe(rename(function(path){
       if(~path.dirname.indexOf('fonts')){
         path.dirname="/fonts"
       }
     }))
     .pipe(gulp.dest(dist.css))
-    .pipe(livereload());
+    .pipe(reload({stream: true}))
 });
 
 //compilador CoffeeScript
 gulp.task('compila_coffee',function(){
     return gulp.src(src.coffee)
-    .pipe(include())
+    // .pipe(sourcemaps.init())
     .pipe(coffee())
-    .pipe(browserify({
-      insertGlobals:true,
-      extensions:['.coffee'],
-      debug: true
-    }))
     .pipe(concat('main_coffee.js'))
     .pipe(gulp.dest(dist.js))
-    .pipe(livereload());
+    .pipe(reload({stream: true}))
 });
 
 //empacotador js
@@ -99,19 +96,40 @@ gulp.task('js',function(){
     .pipe(jsValidate())
     .pipe(concat('main.js'))
     .pipe(gulp.dest(dist.js))
-    .pipe(livereload());
+    .pipe(reload({stream: true}))
+});
+
+//BrowserSync
+
+gulp.task('serve', function () {
+    browserSync.init({
+        server: {
+            baseDir: "../public_html/"
+        }
+    });
+
+    // gulp.watch("/**/*.css").on("change", reload);
+    gulp.watch("*.html").on("change", reload);
 });
 
 //verifica os arquivos modificados
 
-gulp.task('watch', function(){
-  livereload.listen();
-  gulp.watch(src.sass, ['compila_sass']);
-  gulp.watch(src.coffee, ['compila_coffee']);
-  gulp.watch(src.bower, ['bower']);
-  gulp.watch(src.js, ['js']);
-  gulp.watch(src.img, ['image_min']);
-  gulp.watch(src.app).on('change',livereload.changed);
+// gulp.task('watch', function(){
+//   // livereload.listen();
+//   gulp.watch(src.sass, ['compila_sass']);
+//   gulp.watch(src.coffee, ['compila_coffee']);
+//   // gulp.watch(src.bower, ['bower']);
+//   gulp.watch(src.js, ['js']);
+//   gulp.watch(src.img, ['image_min']);
+//   // gulp.watch(src.app).on('change',livereload.changed);
+// });
+
+gulp.task('watch', ['serve'], function (){
+    gulp.watch(src.sass, ['compila_sass']);
+    gulp.watch(src.coffee, ['compila_coffee']);
+    gulp.watch(src.js, ['js']);
+    gulp.watch(src.img, ['image_min']);
+    gulp.watch(src.app).on('change', reload);
 });
 
-gulp.task('default', ['compila_sass','compila_coffee','bower','js','image_min','watch']);
+gulp.task('default', ['compila_sass','compila_coffee','js','image_min','bower','serve', 'watch']);
