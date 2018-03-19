@@ -32,6 +32,7 @@
     "gulp-include": "^2.3.1",
     "gulp-jsvalidate": "^4.0.0",
     "gulp-livereload": "^3.8.1",
+    "gulp-prompt": "^1.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^3.1.0",
     "gulp-typescript": "^4.0.1",

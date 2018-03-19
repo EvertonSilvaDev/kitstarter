@@ -7,6 +7,7 @@ concat     = require('gulp-concat-util'),
 // livereload = require('gulp-livereload'), DEPRECIADO
 browserSync = require('browser-sync').create(),
 watch = require('gulp-watch'),
+prompt = require('gulp-prompt'),
 filter = require('gulp-filter'),
 mainBowerFiles = require('main-bower-files'),
 // bowerNormalizer = require('gulp-bower-normalize'), Não funcionou D:
@@ -25,7 +26,7 @@ var src = {
   coffee:"src/coffee/**/*.coffee",
   js:"src/js/**/*.js",
   img:"src/img/**.*",
-  app:"/**/*.+(html|php|twig)"
+  app:"./**/*.+(html|php|twig)"
 },
 dist = {
   css: "dist/css/",
@@ -102,6 +103,30 @@ gulp.task('js',function(){
 //BrowserSync
 
 gulp.task('serve', function () {
+  return gulp.src('/')
+  .pipe(prompt.prompt({
+    type:'list',
+    name:'tipo',
+    message:'servidor proxy ou de arquivos[server] ?',
+    choices:['proxy','server']
+  }, function(res2){
+    console.log(res2.tipo);
+    if(res2.tipo === 'proxy'){
+    gulp.src('/')
+    .pipe(prompt.prompt({
+        type:'input',
+        name:'host',
+        message:'digite o host do seu servidor'
+      }, function(res3){
+        browserSync.init({
+            proxy: res3.host
+        });
+
+        gulp.watch("**/**/**.*").on("change", reload);
+      }
+    )
+  )
+  }else{
     browserSync.init({
         server: {
             baseDir: "../public_html/"
@@ -110,8 +135,18 @@ gulp.task('serve', function () {
 
     // gulp.watch("/**/*.css").on("change", reload);
     gulp.watch("*.html").on("change", reload);
+  }
+}
+  // browserSync.init({
+  //     server: {
+  //         baseDir: "../public_html/"
+  //     }
+  // });
+  //
+  // // gulp.watch("/**/*.css").on("change", reload);
+  // gulp.watch("*.html").on("change", reload);
+))
 });
-
 //verifica os arquivos modificados
 
 // gulp.task('watch', function(){
